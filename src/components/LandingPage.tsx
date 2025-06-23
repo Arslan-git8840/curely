@@ -9,7 +9,7 @@ import Footer from "./FooterSection";
 export default function CarelyLandingPage() {
   return (
     <div
-      className={`min-h-screen bg-[#f9fafc] text-gray-800 px-4 py-6 md:px-12 lg:px-24 `}
+      className={`min-h-screen bg-[#f9fafc] text-gray-800 px-4 py-3 md:px-12 lg:px-24 `}
     >
       {/* Header */}
       <Nav />

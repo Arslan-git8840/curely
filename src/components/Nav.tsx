@@ -10,7 +10,7 @@ const Nav = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <header className="flex justify-between items-center px-4 py-2 md:px-8 relative">
+    <header className="flex justify-between items-center px-3 py-2 md:px-4 relative">
       {/* Logo */}
       {/* <div className="text-xl font-bold text-[#014d40] flex items-center gap-2">
         <Image src="/ai-doctor.png" alt="Carely Logo" width={28} height={28} />
@@ -22,8 +22,12 @@ const Nav = () => {
 
       {/* Desktop Nav */}
       <div className="hidden md:flex gap-8 items-center">
-        <nav className="flex gap-8 text-sm font-medium">
-          {["Home", "About", "Services", "Pricing"].map((item) => (
+        <nav className="flex gap-6 text-sm font-medium">
+          {[
+            "Dashboard",
+            "Wellness Reports",
+            "My Consultants",
+          ].map((item) => (
             <Link
               href="#"
               key={item}
@@ -58,7 +62,12 @@ const Nav = () => {
           </Button>
         </div>
         <nav className="flex flex-col gap-4 p-4 text-sm font-medium">
-          {["Home", "About", "Services", "Pricing"].map((item) => (
+          {[
+            "Dashboard",
+            "Wellness Reports",
+            "My Consultants",
+            "About Curely",
+          ].map((item) => (
             <Link
               href="#"
               key={item}

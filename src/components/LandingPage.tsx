@@ -9,10 +9,10 @@ import Footer from "./FooterSection";
 export default function CarelyLandingPage() {
   return (
     <div
-      className={`min-h-screen bg-[#f9fafc] text-gray-800 px-4 py-3 md:px-12 lg:px-24 `}
+      // className={`min-h-screen bg-[#f9fafc] text-gray-800 px-4 py-3 md:px-12 lg:px-24 `}
     >
       {/* Header */}
-      <Nav />
+      {/* <Nav /> */}
       {/* Hero Section */}
       <section className="grid grid-cols-1 md:grid-cols-2 items-center gap-8 mt-12">
         {/* Left content */}

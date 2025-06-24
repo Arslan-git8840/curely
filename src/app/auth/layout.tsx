@@ -1,4 +1,8 @@
 import React from "react";
+import { Poppins } from "next/font/google";
+
+
+const poppins = Poppins({ subsets: ["latin"], weight: ["400", "500", "600", "700"] });
 
 export default function AuthLayout({
   children,
@@ -6,7 +10,7 @@ export default function AuthLayout({
   children: React.ReactNode;
 }) {
   return ( 
-  <div>
+  <div className={`${poppins.className}`}>
     {children}
     </div>
   )

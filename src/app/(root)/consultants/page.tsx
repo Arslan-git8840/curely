@@ -1,3 +1,4 @@
+'use client';
 import Consultants from '@/components/ConsultantsPage'
 import React from 'react'
 

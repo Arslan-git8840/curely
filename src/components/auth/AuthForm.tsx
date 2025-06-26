@@ -10,6 +10,13 @@ import { Eye, EyeOff, Github, Mail, Lock, LogIn, User } from "lucide-react";
 import { FaGoogle } from "react-icons/fa";
 import { z } from "zod";
 import Link from "next/link";
+import { Login, Signup } from "@/firebase/actions";
+import { firebaseAuth } from "@/firebase/client";
+import {
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+} from "firebase/auth";
+import { getFriendlyFirebaseError } from "@/lib/utils";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -20,7 +27,11 @@ const registerSchema = loginSchema.extend({
   name: z.string().min(2, "Name is required"),
 });
 
-export default function AuthForm({ mode = "login" }: { mode?: "login" | "register" }) {
+export default function AuthForm({
+  mode = "login",
+}: {
+  mode?: "login" | "register";
+}) {
   const [showPassword, setShowPassword] = useState(false);
   const isLogin = mode === "login";
 
@@ -34,8 +45,48 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
     resolver: zodResolver(formSchema),
   });
 
-  const onSubmit = (data: any) => {
+  const onSubmit = async (data: any) => {
+    // 🧾 Log whether user is logging in or registering
     console.log(`${isLogin ? "Logging in" : "Registering"}...`, data);
+    try {
+      if (isLogin) {
+        // 🔐 Attempt login with Firebase Auth
+        const loginRes = await signInWithEmailAndPassword(
+          firebaseAuth,
+          data.email,
+          data.password
+        );
+        console.log("✅ Login successful:", loginRes);
+        const idToken = await loginRes.user.getIdToken();
+        await Login({ email: data.email, idToken });
+        console.log("✅ User added to Firestore");
+      } else {
+        // 🆕 Create a new user account
+        const registerRes = await createUserWithEmailAndPassword(
+          firebaseAuth,
+          data.email,
+          data.password
+        );
+        console.log("✅ Registration successful:", registerRes);
+        await Signup({
+          fullName: data.name,
+          email: data.email,
+          password: data.password,
+          uid: registerRes.user.uid,
+        });
+        console.log("✅ User added to Firestore");
+      }
+    } catch (error: any) {
+      // ❌ Handle Firebase auth errors
+      console.error("Auth Error:", error);
+
+      // 🎯 Get user-friendly error message
+      const errorMessage = getFriendlyFirebaseError(error.code);
+      console.error("Firebase Auth Error Code:", error.code);
+
+      // ⚠️ Alert user with readable error
+      alert(errorMessage);
+    }
   };
 
   return (
@@ -102,7 +153,10 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {!isLogin && (
             <div className="relative">
-              <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+              <User
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                size={18}
+              />
               <Input
                 {...register("name")}
                 type="text"
@@ -110,13 +164,18 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
                 className="pl-10 py-2 rounded-full"
               />
               {errors.name && (
-                <p className="text-red-500 text-xs mt-1">{errors.name.message as string}</p>
+                <p className="text-red-500 text-xs mt-1">
+                  {errors.name.message as string}
+                </p>
               )}
             </div>
           )}
 
           <div className="relative">
-            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <Mail
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              size={18}
+            />
             <Input
               {...register("email")}
               type="email"
@@ -124,12 +183,17 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
               className="pl-10 py-2 rounded-full"
             />
             {errors.email && (
-              <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
+              <p className="text-red-500 text-xs mt-1">
+                {errors.email.message}
+              </p>
             )}
           </div>
 
           <div className="relative">
-            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+            <Lock
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              size={18}
+            />
             <Input
               {...register("password")}
               type={showPassword ? "text" : "password"}
@@ -144,7 +208,9 @@ export default function AuthForm({ mode = "login" }: { mode?: "login" | "registe
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
             {errors.password && (
-              <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
+              <p className="text-red-500 text-xs mt-1">
+                {errors.password.message}
+              </p>
             )}
           </div>
 

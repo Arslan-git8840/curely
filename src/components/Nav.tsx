@@ -1,13 +1,22 @@
 "use client";
-import React, { useState } from "react";
-import Image from "next/image";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import { HeartPulse, Menu, X } from "lucide-react";
+import { HeartPulse, Menu, Stethoscope, X } from "lucide-react";
 import { MdOutlineArrowOutward } from "react-icons/md";
+import { getCurrentUser } from "@/firebase/actions";
 
 const Nav = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user = await getCurrentUser();
+      console.log(user);
+      setUser(user);
+    };
+    fetchUser();
+  }, []);
 
   return (
     <header className="flex justify-between items-center px-3 py-2 md:px-4 relative">
@@ -23,11 +32,7 @@ const Nav = () => {
       {/* Desktop Nav */}
       <div className="hidden md:flex gap-8 items-center">
         <nav className="flex gap-6 text-sm font-medium">
-          {[
-            "Dashboard",
-            "Wellness Reports",
-            "My Consultants",
-          ].map((item) => (
+          {["Dashboard", "Wellness Reports", "My Consultants"].map((item) => (
             <Link
               href="#"
               key={item}
@@ -37,9 +42,19 @@ const Nav = () => {
             </Link>
           ))}
         </nav>
-        <Button className="bg-[#019c6f] hover:bg-[#017a59] text-white rounded-full px-5 py-2 text-sm flex items-center gap-2">
-          Get in Touch <MdOutlineArrowOutward size={16} className="mb-1 mr-1" />
-        </Button>
+        {user ? (
+          <p className="text-sm font-medium text-[#019c6f] flex items-center gap-2">
+            <Stethoscope size={16} className="text-[#017a59]" />
+            <span className="bg-[#e6faf5] px-3 py-1 rounded-full text-[#017a59] shadow-sm font-semibold">
+              {user.fullName}
+            </span>
+          </p>
+        ) : (
+          <Button className="bg-[#019c6f] hover:bg-[#017a59] text-white rounded-full px-5 py-2 text-sm flex items-center gap-2">
+            Get in Touch{" "}
+            <MdOutlineArrowOutward size={16} className="mb-1 mr-1" />
+          </Button>
+        )}
       </div>
 
       {/* Mobile Hamburger */}
@@ -56,7 +71,19 @@ const Nav = () => {
         }`}
       >
         <div className="flex justify-between items-center px-4 py-4 border-b">
-          <span className="text-xl font-bold text-[#014d40]">Menu</span>
+          {user ? (
+          <p className="text-sm font-medium text-[#019c6f] flex items-center gap-2">
+            <Stethoscope size={16} className="text-[#017a59]" />
+            <span className="bg-[#e6faf5] px-3 py-1 rounded-full text-[#017a59] shadow-sm font-semibold">
+              {user.fullName}
+            </span>
+          </p>
+        ) : (
+          <Button className="bg-[#019c6f] hover:bg-[#017a59] text-white rounded-full px-5 py-2 text-sm flex items-center gap-2">
+            Get in Touch{" "}
+            <MdOutlineArrowOutward size={16} className="mb-1 mr-1" />
+          </Button>
+        )}
           <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>
             <X />
           </Button>

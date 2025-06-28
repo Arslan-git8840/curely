@@ -13,6 +13,8 @@ import {
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import { vapi } from "@/lib/vapi";
+import axios from "axios";
+import { getCurrentUser } from "@/firebase/actions";
 
 interface ConsultationCallProps {
   sessionId: string;
@@ -31,6 +33,9 @@ export default function ConsultationCall({ sessionId }: ConsultationCallProps) {
   const [vapiInstance, setVapiInstance] = useState<any>(null);
   const [role, setRole] = useState<"user" | "assistant">("assistant");
   const [liveTranscript, setLiveTranscript] = useState<string>("");
+  const [conversation, setConversation] = useState<
+    { sender: "user" | "assistant"; text: string }[]
+  >([]);
 
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -41,6 +46,10 @@ export default function ConsultationCall({ sessionId }: ConsultationCallProps) {
     }
     return () => clearInterval(timer);
   }, [callStatus]);
+
+  useEffect(() => {
+    console.log("conversation", conversation);
+  }, [conversation, liveTranscript]);
 
   const handleStartCall = () => {
     // 🚀 Create a new Vapi instance
@@ -55,9 +64,14 @@ export default function ConsultationCall({ sessionId }: ConsultationCallProps) {
       setCallStatus("connected");
     });
     // 🛑 Triggered when the call ends
-    vapi.on("call-end", () => {
+    vapi.on("call-end", async () => {
       console.log("Call ended");
       setCallStatus("ended");
+      // 💾 ===== Save to firestore ===== and  getAi report response
+      const user = await getCurrentUser();
+      const userId = user.uid;
+      const aiResponse = await axios.post('/api/askAi', { conversation, sessionId, userId });
+
       // 🚀 Redirect user or handle post-call logic here
       // ===== Navigate to the Dashboard =====
     });
@@ -69,7 +83,24 @@ export default function ConsultationCall({ sessionId }: ConsultationCallProps) {
         if (transcriptType === "partial") {
           setRole(role);
           setLiveTranscript(transcript);
+          // setConversation((prev) => [
+          //   ...prev,
+          //   {
+          //     sender: role as "user" | "assistant",
+          //     text: transcript,
+          //   },
+          // ]);
         } else {
+          // 💾 Store finalized message in local state
+          setConversation((prev) => [
+            ...prev,
+            {
+              sender: role as "user" | "assistant",
+              text: transcript,
+            },
+          ]);
+
+          // 🔄 Optionally clear live typing line
           // setLiveTranscript('');
         }
         setMessages((prev) => [

@@ -11,7 +11,30 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-export default function ReportSection() {
+export default function ReportSection({ reportData }: any) {
+  if (!reportData) return null;
+
+  // Extract the nested "report" field
+  const rawReport = reportData.report;
+
+  if (!rawReport) return null;
+
+  const parsedReport = typeof rawReport === "string" ? JSON.parse(rawReport) : rawReport;
+
+  const {
+    generatedBy = "",
+    generatedOn = "Unknown Date",
+    patient = {},
+    summary = "",
+    symptoms = [],
+    diagnosis = {},
+    medications = [],
+    lifestyleRecommendations = [],
+    nextSteps = [],
+    disclaimer = "This report is AI-generated based on your input. Please consult a licensed physician before taking any medication.",
+  } = parsedReport;
+
+
   return (
     <section className="bg-gradient-to-br from-[#e0f7f4] to-[#ccf1ee] sm:py-12 py-6 px-3 md:px-12 rounded-2xl">
       <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-10 border border-gray-100 max-w-5xl mx-auto">
@@ -42,13 +65,13 @@ export default function ReportSection() {
             />
             <div>
               <div className="flex flex-wrap items-center gap-2 text-xl font-bold text-[#0f172a]">
-                <h2 className="whitespace-nowrap">Dr. Curely AI</h2>
+                <h2 className="whitespace-nowrap">{reportData?.consultant?.name}</h2>
                 <span className="inline-flex items-center gap-1 text-xs text-[#019c6f] bg-[#e6faf5] px-2 py-1 rounded-full font-medium">
                   <ShieldCheck size={14} /> Trusted AI Report
                 </span>
               </div>
               <p className="text-sm text-gray-500 mt-1">
-                Generated on: June 23, 2025
+                Generated on: {generatedOn}
               </p>
             </div>
           </div>
@@ -56,10 +79,7 @@ export default function ReportSection() {
 
         {/* Intro */}
         <p className="text-sm text-[#475569] mb-6 leading-relaxed">
-          This detailed report has been created after analyzing your symptoms
-          and health profile. It includes your potential diagnosis, suggested
-          medications, lifestyle guidance, and clear next steps — all aimed to
-          help you take control of your health confidently.
+          {summary}
         </p>
 
         {/* Patient Info */}
@@ -71,83 +91,90 @@ export default function ReportSection() {
           <div className="grid gap-2 text-sm text-[#0f172a]">
             <div className="flex justify-between">
               <span className="font-medium">Patient Name:</span>
-              <span>Dlex Alex</span>
+              <span>{patient?.name ?? "N/A"}</span>
             </div>
             <div className="flex justify-between">
               <span className="font-medium">Age:</span>
-              <span>24</span>
+              <span>{patient?.age ?? "N/A"}</span>
             </div>
             <div className="flex justify-between">
               <span className="font-medium">Gender:</span>
-              <span>Male</span>
+              <span>{patient?.gender ?? "N/A"}</span>
             </div>
           </div>
         </div>
 
         {/* Symptoms */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 text-[#019c6f] mb-2">
-            <AlertTriangle size={18} />
-            <h3 className="text-md font-semibold">Symptoms Reported</h3>
+        {symptoms.length > 0 && (
+          <div className="mb-6">
+            <div className="flex items-center gap-2 text-[#019c6f] mb-2">
+              <AlertTriangle size={18} />
+              <h3 className="text-md font-semibold">Symptoms Reported</h3>
+            </div>
+            <ul className="list-disc pl-5 text-sm text-[#475569] space-y-1 bg-gray-50 p-4 rounded-xl">
+              {symptoms.map((symptom, index) => (
+                <li key={index}>{symptom}</li>
+              ))}
+            </ul>
           </div>
-          <ul className="list-disc pl-5 text-sm text-[#475569] space-y-1 bg-gray-50 p-4 rounded-xl">
-            <li>Frequent thirst and urination</li>
-            <li>Persistent fatigue and blurred vision</li>
-            <li>Slow healing of cuts or wounds</li>
-          </ul>
-        </div>
+        )}
 
         {/* Diagnosis */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 text-[#019c6f] mb-2">
-            <Stethoscope size={18} />
-            <h3 className="text-md font-semibold">Diagnosis</h3>
+        {diagnosis?.condition && (
+          <div className="mb-6">
+            <div className="flex items-center gap-2 text-[#019c6f] mb-2">
+              <Stethoscope size={18} />
+              <h3 className="text-md font-semibold">Diagnosis</h3>
+            </div>
+            <p className="text-sm text-[#475569] bg-gray-50 p-4 rounded-xl leading-relaxed">
+              <strong>{diagnosis.condition}</strong>: {diagnosis.details}
+            </p>
           </div>
-          <p className="text-sm text-[#475569] bg-gray-50 p-4 rounded-xl leading-relaxed">
-            Based on your symptoms and responses, it appears you're experiencing
-            early signs of <strong>Type 2 Diabetes</strong> with elevated blood
-            sugar levels, fatigue, and mild dehydration. This condition requires
-            immediate attention and lifestyle changes to avoid further
-            complications.
-          </p>
-        </div>
+        )}
 
         {/* Medications */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 text-[#019c6f] mb-2">
-            <Pill size={18} />
-            <h3 className="text-md font-semibold">Prescribed Medications</h3>
+        {medications.length > 0 && (
+          <div className="mb-6">
+            <div className="flex items-center gap-2 text-[#019c6f] mb-2">
+              <Pill size={18} />
+              <h3 className="text-md font-semibold">Prescribed Medications</h3>
+            </div>
+            <ul className="list-disc pl-5 text-sm text-[#475569] space-y-1 bg-gray-50 p-4 rounded-xl">
+              {medications.map((med, index) => (
+                <li key={index}>
+                  {med.name} {med.dosage} – {med.instructions}
+                </li>
+              ))}
+            </ul>
           </div>
-          <ul className="list-disc pl-5 text-sm text-[#475569] space-y-1 bg-gray-50 p-4 rounded-xl">
-            <li>Metformin 500mg – Twice a day after meals</li>
-            <li>Vitamin D3 – 1000 IU every morning</li>
-            <li>Hydration salts – 1 sachet daily for 5 days</li>
-          </ul>
-        </div>
+        )}
 
         {/* Lifestyle Recommendations */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 text-[#019c6f] mb-2">
-            <HeartPulse size={18} />
-            <h3 className="text-md font-semibold">Lifestyle Recommendations</h3>
+        {lifestyleRecommendations.length > 0 && (
+          <div className="mb-6">
+            <div className="flex items-center gap-2 text-[#019c6f] mb-2">
+              <HeartPulse size={18} />
+              <h3 className="text-md font-semibold">Lifestyle Recommendations</h3>
+            </div>
+            <ul className="list-disc pl-5 text-sm text-[#475569] space-y-1 bg-gray-50 p-4 rounded-xl">
+              {lifestyleRecommendations.map((tip, index) => (
+                <li key={index}>{tip}</li>
+              ))}
+            </ul>
           </div>
-          <ul className="list-disc pl-5 text-sm text-[#475569] space-y-1 bg-gray-50 p-4 rounded-xl">
-            <li>Follow a low-carb, high-fiber diet</li>
-            <li>Walk at least 30 minutes daily</li>
-            <li>Get your HbA1c tested in 2 weeks</li>
-          </ul>
-        </div>
+        )}
 
         {/* Next Steps */}
-        <div className="bg-[#f1fdfb] rounded-xl p-4 mb-6">
-          <div className="text-[#019c6f] font-semibold mb-2">Next Steps</div>
-          <p className="text-sm text-[#475569] leading-relaxed">
-            Schedule an appointment with a licensed endocrinologist. Maintain a
-            health diary to track blood sugar and daily meals. Join a support
-            group to stay motivated. Regularly monitor your medication and
-            report any side effects.
-          </p>
-        </div>
+        {nextSteps.length > 0 && (
+          <div className="bg-[#f1fdfb] rounded-xl p-4 mb-6">
+            <div className="text-[#019c6f] font-semibold mb-2">Next Steps</div>
+            <ul className="list-disc pl-5 text-sm text-[#475569] space-y-1">
+              {nextSteps.map((step, index) => (
+                <li key={index}>{step}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Download Button */}
         <div className="text-center mt-6">
@@ -159,10 +186,7 @@ export default function ReportSection() {
         {/* Disclaimer */}
         <div className="flex items-center gap-2 text-xs text-gray-400 border-t pt-4 mt-8">
           <Info size={16} />
-          <p>
-            This report is AI-generated based on your input. Please consult a
-            licensed physician before taking any medication.
-          </p>
+          <p>{disclaimer}</p>
         </div>
       </div>
     </section>

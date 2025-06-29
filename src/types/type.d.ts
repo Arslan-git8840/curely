@@ -28,3 +28,41 @@ interface ChatMessage {
   text: string;
   timestamp: number; // Date.now()
 }
+
+type Medication = {
+  name: string;
+  dosage: string;
+  instructions: string;
+};
+
+type Diagnosis = {
+  condition: string;
+  details: string;
+};
+
+type Patient = {
+  name: string;
+  age: string | number;
+  gender: string;
+};
+
+type ParsedReport = {
+  generatedBy?: string;
+  generatedOn?: string;
+  patient?: Patient;
+  summary?: string;
+  symptoms?: string[];
+  diagnosis?: Diagnosis;
+  medications?: Medication[];
+  lifestyleRecommendations?: string[];
+  nextSteps?: string[];
+  disclaimer?: string;
+};
+
+type ReportData = {
+  report: ParsedReport | string;
+  consultant?: {
+    name: string;
+    image: string;
+  };
+};

@@ -11,7 +11,11 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
-export default function ReportSection({ reportData }: any) {
+export default function ReportSection({
+  reportData,
+}: {
+  reportData: ReportData;
+}) {
   if (!reportData) return null;
 
   // Extract the nested "report" field
@@ -19,8 +23,12 @@ export default function ReportSection({ reportData }: any) {
 
   if (!rawReport) return null;
 
+  // const parsedReport =
+  //   typeof rawReport === "string" ? JSON.parse(rawReport) : rawReport;
   const parsedReport =
-    typeof rawReport === "string" ? JSON.parse(rawReport) : rawReport;
+    typeof rawReport === "string"
+      ? JSON.parse(rawReport)
+      : (rawReport as ParsedReport);
 
   const {
     generatedBy = "",
@@ -141,7 +149,7 @@ export default function ReportSection({ reportData }: any) {
             </div>
             <ul className="list-disc pl-5 text-sm text-[#475569] space-y-1 bg-gray-50 p-4 rounded-xl">
               {medications.map((med, index) => (
-                <li key={index}>
+                <li key={`${med.name}-${index}`}>
                   {med.name} {med.dosage} – {med.instructions}
                 </li>
               ))}

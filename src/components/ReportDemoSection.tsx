@@ -11,6 +11,12 @@ import {
   ShieldCheck,
 } from "lucide-react";
 
+type medication = {
+  name: string,
+  dosage: string,
+  instructions: string
+}
+
 export default function ReportSection({
   reportData,
 }: {
@@ -120,7 +126,7 @@ export default function ReportSection({
               <h3 className="text-md font-semibold">Symptoms Reported</h3>
             </div>
             <ul className="list-disc pl-5 text-sm text-[#475569] space-y-1 bg-gray-50 p-4 rounded-xl">
-              {symptoms.map((symptom, index) => (
+              {symptoms.map((symptom: string, index: number | string) => (
                 <li key={index}>{symptom}</li>
               ))}
             </ul>
@@ -148,7 +154,7 @@ export default function ReportSection({
               <h3 className="text-md font-semibold">Prescribed Medications</h3>
             </div>
             <ul className="list-disc pl-5 text-sm text-[#475569] space-y-1 bg-gray-50 p-4 rounded-xl">
-              {medications.map((med, index) => (
+              {medications.map((med: medication, index: number | string) => (
                 <li key={`${med.name}-${index}`}>
                   {med.name} {med.dosage} – {med.instructions}
                 </li>
@@ -167,7 +173,7 @@ export default function ReportSection({
               </h3>
             </div>
             <ul className="list-disc pl-5 text-sm text-[#475569] space-y-1 bg-gray-50 p-4 rounded-xl">
-              {lifestyleRecommendations.map((tip, index) => (
+              {lifestyleRecommendations.map((tip: string, index: string | number) => (
                 <li key={index}>{tip}</li>
               ))}
             </ul>
@@ -179,7 +185,7 @@ export default function ReportSection({
           <div className="bg-[#f1fdfb] rounded-xl p-4 mb-6">
             <div className="text-[#019c6f] font-semibold mb-2">Next Steps</div>
             <ul className="list-disc pl-5 text-sm text-[#475569] space-y-1">
-              {nextSteps.map((step, index) => (
+              {nextSteps.map((step: string, index: string | number) => (
                 <li key={index}>{step}</li>
               ))}
             </ul>

@@ -19,7 +19,8 @@ export default function ReportSection({ reportData }: any) {
 
   if (!rawReport) return null;
 
-  const parsedReport = typeof rawReport === "string" ? JSON.parse(rawReport) : rawReport;
+  const parsedReport =
+    typeof rawReport === "string" ? JSON.parse(rawReport) : rawReport;
 
   const {
     generatedBy = "",
@@ -33,7 +34,6 @@ export default function ReportSection({ reportData }: any) {
     nextSteps = [],
     disclaimer = "This report is AI-generated based on your input. Please consult a licensed physician before taking any medication.",
   } = parsedReport;
-
 
   return (
     <section className="bg-gradient-to-br from-[#e0f7f4] to-[#ccf1ee] sm:py-12 py-6 px-3 md:px-12 rounded-2xl">
@@ -57,15 +57,17 @@ export default function ReportSection({ reportData }: any) {
         <div className="flex items-center justify-between gap-4 mb-8 border-t pt-4">
           <div className="flex items-center gap-4">
             <Image
-              src="/ai-doctor.png"
+              src={`/${reportData?.consultant?.image}`}
               alt="AI Consultant"
               width={64}
               height={64}
-              className="rounded-full border"
+              className="rounded-full border-2 border-[#019c6f] shadow-md ring-2 ring-[#bbf7d0] p-1"
             />
             <div>
               <div className="flex flex-wrap items-center gap-2 text-xl font-bold text-[#0f172a]">
-                <h2 className="whitespace-nowrap">{reportData?.consultant?.name}</h2>
+                <h2 className="whitespace-nowrap">
+                  {reportData?.consultant?.name}
+                </h2>
                 <span className="inline-flex items-center gap-1 text-xs text-[#019c6f] bg-[#e6faf5] px-2 py-1 rounded-full font-medium">
                   <ShieldCheck size={14} /> Trusted AI Report
                 </span>
@@ -78,9 +80,7 @@ export default function ReportSection({ reportData }: any) {
         </div>
 
         {/* Intro */}
-        <p className="text-sm text-[#475569] mb-6 leading-relaxed">
-          {summary}
-        </p>
+        <p className="text-sm text-[#475569] mb-6 leading-relaxed">{summary}</p>
 
         {/* Patient Info */}
         <div className="bg-[#f1fdfb] rounded-xl p-4 mb-6">
@@ -154,7 +154,9 @@ export default function ReportSection({ reportData }: any) {
           <div className="mb-6">
             <div className="flex items-center gap-2 text-[#019c6f] mb-2">
               <HeartPulse size={18} />
-              <h3 className="text-md font-semibold">Lifestyle Recommendations</h3>
+              <h3 className="text-md font-semibold">
+                Lifestyle Recommendations
+              </h3>
             </div>
             <ul className="list-disc pl-5 text-sm text-[#475569] space-y-1 bg-gray-50 p-4 rounded-xl">
               {lifestyleRecommendations.map((tip, index) => (

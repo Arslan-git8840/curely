@@ -17,6 +17,7 @@ import {
   createUserWithEmailAndPassword,
 } from "firebase/auth";
 import { getFriendlyFirebaseError } from "@/lib/utils";
+import { useRouter } from "next/navigation";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -36,6 +37,8 @@ export default function AuthForm({
   const isLogin = mode === "login";
 
   const formSchema = isLogin ? loginSchema : registerSchema;
+
+  const router = useRouter();
 
   const {
     register,
@@ -60,6 +63,7 @@ export default function AuthForm({
         const idToken = await loginRes.user.getIdToken();
         await Login({ email: data.email, idToken });
         console.log("✅ User added to Firestore");
+        router.push('/')
       } else {
         // 🆕 Create a new user account
         const registerRes = await createUserWithEmailAndPassword(
@@ -75,6 +79,8 @@ export default function AuthForm({
           uid: registerRes.user.uid,
         });
         console.log("✅ User added to Firestore");
+        // 
+        router.push('/auth/log-in')
       }
     } catch (error: any) {
       // ❌ Handle Firebase auth errors

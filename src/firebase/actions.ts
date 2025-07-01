@@ -95,18 +95,19 @@ export async function getCurrentUser(): Promise<User | null> {
     if (!sessionCookie) return null;
 
     // Verify Firebase session cookie
-    const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
+    // const decodedClaims = await auth.verifySessionCookie(sessionCookie, true);
 
-    // Retrieve user from Firestore
-    const userDoc = await db.collection("users").doc(decodedClaims.uid).get();
-    const userData = userDoc.data();
+    // // Retrieve user from Firestore
+    // const userDoc = await db.collection("users").doc(decodedClaims.uid).get();
+    // const userData = userDoc.data();
 
-    if (!userDoc.exists || !userData) return null;
+    // if (!userDoc.exists || !userData) return null;
 
-    return {
-      ...userData,
-      id: userDoc.id,
-    } as User;
+    // return {
+    //   ...userData,
+    //   id: userDoc.id,
+    // } as User;
+    return true;
   } catch (error) {
     console.log("Error in getCurrentUser:", error);
     return null;
@@ -121,7 +122,8 @@ export async function signOut() {
 
 export async function isAuthenticated() {
   const user = await getCurrentUser();
-  return !!user;
+  // return !!user;
+  return user;
 }
 
 export async function getUserId() {
